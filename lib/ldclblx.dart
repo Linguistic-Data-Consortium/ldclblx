@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:convert';
-
 String tsv(x) {
   final lines = x; //utf8.decoder.bind(x).transform(const LineSplitter());
   String header1 = '''File type = "ooTextFile"
