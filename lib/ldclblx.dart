@@ -20,10 +20,10 @@ Object class = "TextGrid"
   var first = lines[1].split("\t");
   String last = '';
   if (double.parse(first[2]) > 0) {
-    header3 = "${lines.length + 2}\n";
+    header3 = "${lines.length + 1}\n";
     last = '0';
   } else {
-    header3 = "${lines.length + 1}\n";
+    header3 = "${lines.length}\n";
   }
   List a = [];
   for (final line in lines.sublist(1)) {
