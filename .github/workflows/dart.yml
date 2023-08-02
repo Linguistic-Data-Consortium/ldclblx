@@ -20,6 +20,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/upload-release-asset@v1
 
       # Note: This workflow uses the latest stable version of the Dart SDK.
       # You can specify other versions if desired, see documentation here:
@@ -44,8 +45,31 @@ jobs:
       - name: Run tests
         run: dart test
 
-      - name: echo
-        env:
-          EVENT_CONTEXT: ${{ toJSON(github.event) }}
+      - name: compile and zip
         run: |
-          echo $EVENT_CONTEXT
+          export NAME=${{ github.event.release.tag_name }}_${{ matrix.os }}
+          mkdir $NAME
+          dart compile exe bin/ldclblx.dart -o $NAME/ldclblx
+          cp README.md $NAME
+          zip -r $NAME.zip $NAME
+
+      - name: create release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }} ${{ matrix.os }}
+          draft: false
+          prerelease: false
+
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NAME: ${{ github.event.release.tag_name }}_${{ matrix.os }}
+        with:
+          asset_path: ./$NAME.zip
+          asset_name: $NAME.zip
+          asset_content_type: application/zip
