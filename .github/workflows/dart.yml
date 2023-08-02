@@ -11,13 +11,30 @@ on:
       - 'v*'
 
 jobs:
+  create:
+    runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.create.outputs.upload_url }}
+    steps:
+      - name: create release
+        id: create
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
   build:
+    needs: create
     strategy:
       matrix:
         os: [ macos, ubuntu, windows ]
     runs-on: ${{ matrix.os }}-latest
 
     steps:
+
       - uses: actions/checkout@v3
 
       # Note: This workflow uses the latest stable version of the Dart SDK.
@@ -61,24 +78,13 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: Compress-Archive -Path ldclblx_${{ github.ref_name }}_windows/* -Destination ldclblx_${{ github.ref_name }}_windows.zip
 
-      - name: create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }} ${{ matrix.os }}
-          draft: false
-          prerelease: false
-
-
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          URL: ${{ needs.create.outputs.url }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          upload_url: $URL
           asset_path: ./ldclblx_${{ github.ref_name }}_${{ matrix.os }}.zip
           asset_name: ldclblx_${{ github.ref_name }}_${{ matrix.os }}.zip
           asset_content_type: application/zip
