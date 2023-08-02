@@ -23,13 +23,13 @@ void main(List<String> arguments) {
   }
 }
 
-Future<void> _handleError(String path) async {
-  if (await FileSystemEntity.isDirectory(path)) {
-    stderr.writeln('error: $path is a directory');
-  } else {
-    exitCode = 2;
-  }
-}
+// Future<void> _handleError(String path) async {
+//   if (await FileSystemEntity.isDirectory(path)) {
+//     stderr.writeln('error: $path is a directory');
+//   } else {
+//     exitCode = 2;
+//   }
+// }
 
 String whichFormat(fn) {
   final ext = p.extension(fn);
