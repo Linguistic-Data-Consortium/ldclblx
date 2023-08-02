@@ -20,7 +20,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/upload-release-asset@v1
 
       # Note: This workflow uses the latest stable version of the Dart SDK.
       # You can specify other versions if desired, see documentation here:
@@ -64,3 +63,14 @@ jobs:
           draft: false
           prerelease: false
 
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NAME: ${{ github.event.release.tag_name }}_${{ matrix.os }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./$NAME.zip
+          asset_name: $NAME.zip
+          asset_content_type: application/zip
