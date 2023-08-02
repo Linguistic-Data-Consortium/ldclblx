@@ -82,9 +82,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          URL: ${{ needs.create.outputs.url }}
         with:
-          upload_url: $URL
+          upload_url: ${{ needs.create.outputs.url }}
           asset_path: ./ldclblx_${{ github.ref_name }}_${{ matrix.os }}.zip
           asset_name: ldclblx_${{ github.ref_name }}_${{ matrix.os }}.zip
           asset_content_type: application/zip
