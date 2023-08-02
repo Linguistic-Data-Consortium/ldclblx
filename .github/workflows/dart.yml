@@ -43,14 +43,21 @@ jobs:
       - name: Run tests
         run: dart test
 
-      - name: compile and zip
+      - name: compile
         shell: bash
         run: |
           export NAME=ldclblx_${{ github.ref_name }}_${{ matrix.os }}
           mkdir $NAME
           dart compile exe bin/ldclblx.dart -o $NAME/ldclblx
           cp README.md $NAME
-          zip -r $NAME.zip $NAME
+      
+      - name: zip bash
+        if: matrix.os != 'windows-latest'
+        run: zip -r $NAME.zip $NAME
+
+      - name: zip powershell
+        if: matrix.os == 'windows-latest'
+        run: Compress-Archive -Path ldclblx_${{ github.ref_name }}_windows/* -Destination ldclblx_${{ github.ref_name }}_windows.zip
 
       - name: create release
         id: create_release
