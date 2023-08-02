@@ -69,13 +69,13 @@ jobs:
           cp README.md $NAME
       
       - name: zip bash
-        if: matrix.os != 'windows-latest'
+        if: matrix.os != 'windows'
         run: |
           export NAME=ldclblx_${{ github.ref_name }}_${{ matrix.os }}
           zip -r $NAME.zip $NAME
 
       - name: zip powershell
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows'
         run: Compress-Archive -Path ldclblx_${{ github.ref_name }}_windows/* -Destination ldclblx_${{ github.ref_name }}_windows.zip
 
       - name: Upload Release Asset
